@@ -1,4 +1,4 @@
-from base.base_structure import EstruturaEstatica
+from base_structure import EstruturaEstatica
 
 
 class Vetor(EstruturaEstatica):
