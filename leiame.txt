@@ -1,0 +1,7 @@
+Desempenho das operações
+
+add:
+remove:
+contains:
+size:
+list:
