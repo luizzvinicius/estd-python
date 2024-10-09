@@ -1,3 +1,54 @@
+class FilaArray:
+    def __init__(self, queue=None):
+        if queue is None:
+            queue = [None] * 16
+            self._added = 0
+        else:
+            added = 0
+            for i in queue:
+                if i is not None:
+                    added += 1
+            self._added = added
+
+        self._first = 0
+        self.queue = queue
+
+    def is_empty(self):
+        return self._added == 0
+
+    def is_full(self):
+        return self._added == len(self.queue)
+
+    def enqueue(self, element):
+        self._increase_size()
+
+        disponivel = (self._first + self._added) % len(self.queue)
+        self.queue[disponivel] = element
+        self._added += 1
+
+    def dequeue(self):
+        if self.is_empty():
+            raise EmptyQueue()
+
+        excluded = self.queue[self._first]
+        self.queue[self._first] = None
+        self._first = (self._first + 1) % len(self.queue)
+        self._added -= 1
+        return excluded
+
+    def _increase_size(self):
+        if self._added == len(self.queue):
+            old_queue = self.queue
+            self.queue = [None] * 2 * len(self.queue)
+
+            i = self._first
+            for j in range(self._added):
+                self.queue[j] = old_queue[i]
+                i = (i + 1) % len(old_queue)
+
+            self._first = 0
+
+
 class EmptyQueue(Exception):
     def __init__(self, mensagem="Fila está vazia"):
         super().__init__(mensagem)
@@ -8,88 +59,78 @@ class ElementNotFound(Exception):
         super().__init__(mensagem)
 
 
-class SetWithQueue:
-    def __init__(self, capacidade = None):
-        capacidade = 16 if capacidade is None else capacidade
-        self.lista = [None] * capacidade
-        self.adicionados = 0
-        # self._inicio = 0
+class SetWithQueue(FilaArray):
+    def __init__(self, queue=None):
+        super().__init__(queue)
 
     def size(self):
-        return self.adicionados
-
-    def is_empty(self):
-        return self.adicionados == 0
-
-    def is_full(self):
-        return self.adicionados == len(self.lista)
+        return self._added
 
     def add(self, element):
         if self.contains(element):
             return
 
-        self._aumenta_capacidade()
-        self.lista[self.adicionados] = element
-        self.adicionados += 1
+        super().enqueue(element)
 
     def remove(self, element):
         if self.is_empty():
             raise EmptyQueue()
 
-        index = self.index_of(element)
+        old_queue = self.queue
+        self.queue = [None] * len(self.queue)
+
+        i = self._first
+        for j in range(self._added):
+            self.queue[j] = old_queue[i]
+            i = (i + 1) % len(old_queue)
+        self._first = 0 # reorganiza a fila
+
+        index = self._index_of(element)
         if index == -1:
-            raise ValueError("Element not found")
+            raise Exception("Elemento não existe")
 
-        excluded = self.lista[index]
+        for i in range(index, self._added - 1):
+            self.queue[i] = self.queue[i + 1]
 
-        for i in range(index, self.adicionados):
-            self.lista[i] = self.lista[i + 1]
+        self._added -= 1
+        self.queue[self._added] = None
+        self._first = 0
 
-        self.adicionados -= 1
-        return excluded
-
-    def index_of(self, element):
-        for index, v in enumerate(self.lista):
-            if v == element:
+    def _index_of(self, element):
+        copy = FilaArray(self.queue[:])
+        index = 0
+        while not copy.is_empty():
+            if copy.dequeue() == element:
                 return index
+            index += 1
+
         return -1
 
     def contains(self, element):
-        for e in self.lista:
-            if e == element:
-                return True
-        return False
+        index = self._index_of(element)
+        return index > -1
 
     def list(self):
         if self.is_empty():
             return "[]"
 
         s = "["
-        for e in self.lista:  # tirar o if
-            if e is None:
-                break
-            s += f"{str(e)}, "
+        i = self._first
+        for _ in range(self._added):
+            s += f"{self.queue[i]}, "
+            i = (i + 1) % len(s)
 
         return f"{s[:-2]}]"
-        
-
-    def _aumenta_capacidade(self):
-        if self.is_full():
-            new_list = [None] * len(self.lista) * 2
-
-            for i, element in enumerate(self.lista):
-                new_list[i] = element
-
-            self.lista = new_list
 
 
-lista = SetWithQueue(2)
+lista = SetWithQueue()
 lista.add(1)
 lista.add(2)
 lista.add(3)
 lista.add(4)
 lista.add(5)
-lista.remove(2)
-
-print(lista.contains(3))
-print(lista.list(), lista.size())
+lista.remove(1)
+lista.add(5)
+lista.remove(5)
+print(lista.list())
+print(lista.contains(5))
