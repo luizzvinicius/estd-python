@@ -1,12 +1,5 @@
-# Teste para SetWithQueue
-
-"""
-Acrescente aqui o seu código para SetWithQueue ou realize a importação do módulo para que os testes possam ser realizados corretamente.
-
-"""
 from set_with_queue import SetWithQueue
 
-# O retorno dos testes foram adaptados para string
 
 def test_add_unique_elements():
     set_queue = SetWithQueue()
@@ -91,7 +84,7 @@ def test_add_multiple_unique_elements():
     for i in range(10):
         set_queue.add(i)
     assert set_queue.size() == 10, "Erro: Esperado 10"
-    assert set_queue.list() == "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]", "Erro: Esperado [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"
+    assert (set_queue.list() == "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"), "Erro: Esperado [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]"
 
 
 def test_add_multiple_duplicate_elements():
