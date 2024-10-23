@@ -183,6 +183,19 @@ class ListaEncadeada:
             atual = proximo
         self.tamanho = 0
 
+    def ordena(self): # bubble
+        inicial = self.inicio
+        proximo = None
+        for _ in range(self.tamanho - 1):
+            for _ in range(self.tamanho - 1):
+                proximo = inicial.get_proximo()
+                if inicial.get_elem() > proximo.get_elem():
+                    elem_inicial = inicial.get_elem()
+                    inicial.set_elem(proximo.get_elem())
+                    proximo.set_elem(elem_inicial)
+                inicial = proximo
+            inicial = self.inicio
+
     def valida_index(self, index):
         if not 0 <= index < self.tamanho:
             raise ValueError("Índice inválido")
