@@ -42,7 +42,7 @@ class ListaEncadeada:
             self.inicio = novo_elem
             self.tamanho += 1
 
-    def adiciona_index(self, index, elem):
+    def adiciona_index(self, elem, index):
         if index < 0 or index > self.tamanho:
             raise ValueError("Índice inválido")
 
@@ -61,33 +61,33 @@ class ListaEncadeada:
             self.tamanho += 1
 
     def index(self, elem):
-        start = self.inicio
+        inicial = self.inicio
         for i in range(self.tamanho):
-            if start.get_elem() == elem:
+            if inicial.get_elem() == elem:
                 return i
-            start = start.get_proximo()
+            inicial = inicial.get_proximo()
         return -1
 
-    def busca_no(self, index):
+    def _busca_no(self, index):
         self.valida_index(index)
 
         start = self.inicio
-        for i in range(index):
+        for _ in range(index):
             start = start.get_proximo()
         return start
 
     def busca(self, index):
-        return self.busca_no(index).get_elem()
+        return self._busca_no(index).get_elem()
 
     def remove_index(self, index):
         self.valida_index(index)
 
         if index == 0:
-            return self.remove_first()
+            self.remove_first()
         elif index == self.tamanho - 1:
-            return self.remove_last()
+            self.remove_last()
         else:
-            anterior_ao_removido = self.busca_no(index - 1)
+            anterior_ao_removido = self._busca_no(index - 1)
             ser_removido = anterior_ao_removido.get_proximo()
             retorno = ser_removido.get_elem()
             anterior_ao_removido.set_proximo(ser_removido.get_proximo())
@@ -114,13 +114,13 @@ class ListaEncadeada:
         if self.tamanho == 1:
             return self.remove_first()
 
-        penultimo_no = self.busca_no(self.tamanho - 2)
-        last_value = self.ultimo.get_elem()
+        penultimo_no = self._busca_no(self.tamanho - 2)
+        removido = self.ultimo.get_elem()
         self.ultimo.set_elem(None)
         self.ultimo = penultimo_no
         penultimo_no.set_proximo(None)
         self.tamanho -= 1
-        return last_value
+        return removido
 
     def remove(self, elem):
         index = self.index(elem)
@@ -153,12 +153,11 @@ class ListaEncadeada:
             atual = atual.get_proximo()
         return vetor
 
-    def inserir_ordenado(self, elem):
-        chave = elem
+    def adiciona_ordenado(self, elem):
         inicial = self.inicio
         i = 0
         while i < self.tamanho:
-            if chave < inicial.get_elem():
+            if elem < inicial.get_elem():
                 break
             inicial = inicial.get_proximo()
             i += 1
@@ -185,21 +184,21 @@ class ListaEncadeada:
         self.tamanho = 0
 
     def valida_index(self, index):
-        if not (0 <= index < self.tamanho):
+        if not 0 <= index < self.tamanho:
             raise ValueError("Índice inválido")
 
-    def get_tamanho(self):
+    def __len__(self):
         return self.tamanho
 
     def __str__(self):
         if self.tamanho == 0:
             return "[]"
 
-        builder = "["
+        s = "["
         atual = self.inicio
-        for i in range(self.tamanho - 1):
-            builder += f"{atual.get_elem()}, "
+        for _ in range(self.tamanho - 1):
+            s += f"{atual.get_elem()}, "
             atual = atual.get_proximo()
 
-        builder += f"{atual.get_elem()}]"
-        return builder
+        s += f"{atual.get_elem()}]"
+        return s
